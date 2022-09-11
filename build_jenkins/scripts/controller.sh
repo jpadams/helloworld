@@ -1,4 +1,6 @@
-docker run --name jenkins-docker --rm --detach \
+docker network create jenkins
+
+docker run --name jenkins-docker --detach --restart=always \
   --privileged --network jenkins --network-alias docker \
   --env DOCKER_TLS_CERTDIR=/certs \
   --volume jenkins-docker-certs:/certs/client \
@@ -6,7 +8,7 @@ docker run --name jenkins-docker --rm --detach \
   --publish 2376:2376 \
   docker:dind
 
-docker run --name jenkins-blueocean --rm --detach \
+docker run --name jenkins-blueocean --detach --restart=always \
   --network jenkins --env DOCKER_HOST=tcp://docker:2376 \
   --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 \
   --volume jenkins-data:/var/jenkins_home \
