@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'dagger' }
+  agent { label 'cloak' }
   
   environment {
     //https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials
@@ -10,10 +10,13 @@ pipeline {
     GREETING = "Hello there, Jenkins! Hello"
   }
   stages {
-    stage("do") {
+    stage("run cloak") {
       steps {
         sh '''
-            dagger do hello --log-format=plain
+			dagger do hello --log-format=plain
+			cloak version
+			cd /cloak
+			cloak do -f examples/queries/docker_build.graphql
         '''
       }
     }

@@ -18,6 +18,7 @@ import (
 
 dagger.#Plan & {
 	client: {
+		env: DHTKN: dagger.#Secret
 		network: {
 			(actions.sshSock): connect: dagger.#Socket
 		}
@@ -83,12 +84,24 @@ dagger.#Plan & {
 							https://download.docker.com/linux/debian \
 							$(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 						apt-get update && apt-get install -y docker-ce-cli
+
+						### Install dagger
+						cd /usr/local
+						curl -L https://dl.dagger.io/dagger/install.sh | sh
+
+						### For cloak and dagger to be able to use
+						### mounted docker socket as jenkins user
+						touch /var/run/docker.sock && chmod 666 /var/run/docker.sock
 						"""#
 				}
 			}
 			push: docker.#Push & {
-				dest:  "localhost:5001/cloak-jenkins-agent:1"
+				dest:  "jeremyatdockerhub/cloak-jenkins-agent:2"
 				image: buildAgent.output
+				auth: {
+					username: "jeremyatdockerhub"
+					secret:   client.env.DHTKN
+				}
 			}
 		}
 	}
