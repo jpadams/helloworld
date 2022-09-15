@@ -13,8 +13,6 @@ pipeline {
     stage("run cloak") {
       steps {
         sh '''
-			dagger do hello --log-format=plain
-			cloak version
 			cd /cloak
 			cloak do -f examples/queries/docker_build.graphql
         '''
