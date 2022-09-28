@@ -33,7 +33,8 @@ dagger.#Plan & {
 						cd /cloak
 						go build ./cmd/cloak
 						ln -sf "$(pwd)/cloak" /usr/local/bin
-						#cloak version
+						ln -sf "$(pwd)/cloak" /usr/local/bin/dagger
+						dagger version
 						"""
 					export: directories: "/cloak": _
 				}
@@ -62,18 +63,16 @@ dagger.#Plan & {
 							$(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 						apt-get update && apt-get install -y docker-ce-cli
 
-						### Install dagger
-						cd /usr/local
-						curl -L https://dl.dagger.io/dagger/install.sh | sh
+						apt-get install jq
 
-						### For cloak and dagger to be able to use
+						### For dagger/cloak to be able to use
 						### mounted docker socket as jenkins user
 						touch /var/run/docker.sock && chmod 666 /var/run/docker.sock
 						"""#
 				}
 			}
 			push: docker.#Push & {
-				dest:  "jeremyatdockerhub/cloak-jenkins-agent:3"
+				dest:  "jeremyatdockerhub/cloak-jenkins-agent:4"
 				image: buildAgent.output
 				auth: {
 					username: "jeremyatdockerhub"
