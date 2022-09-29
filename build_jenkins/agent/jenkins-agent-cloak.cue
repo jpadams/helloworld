@@ -33,8 +33,9 @@ dagger.#Plan & {
 						cd /cloak
 						go build ./cmd/cloak
 						ln -sf "$(pwd)/cloak" /usr/local/bin
-						ln -sf "$(pwd)/cloak" /usr/local/bin/dagger
-						dagger version
+						#ln -sf "$(pwd)/cloak" /usr/local/bin/dagger
+						#dagger version
+						cloak version
 						"""
 					export: directories: "/cloak": _
 				}
@@ -55,6 +56,7 @@ dagger.#Plan & {
 						apt-get update && apt-get install -y lsb-release
 						apt-get install curl -y
 						ln -sf /cloak/cloak /usr/local/bin
+						cloak version
 						curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
 							https://download.docker.com/linux/debian/gpg
 						echo "deb [arch=$(dpkg --print-architecture) \
@@ -63,16 +65,19 @@ dagger.#Plan & {
 							$(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 						apt-get update && apt-get install -y docker-ce-cli
 
-						apt-get install jq
+						apt-get install -y jq
 
 						### For dagger/cloak to be able to use
 						### mounted docker socket as jenkins user
 						touch /var/run/docker.sock && chmod 666 /var/run/docker.sock
+
+						mkdir -p ~/.ssh/
+						ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 						"""#
 				}
 			}
 			push: docker.#Push & {
-				dest:  "jeremyatdockerhub/cloak-jenkins-agent:4"
+				dest:  "jeremyatdockerhub/cloak-jenkins-agent:7"
 				image: buildAgent.output
 				auth: {
 					username: "jeremyatdockerhub"
